@@ -12,10 +12,6 @@ function resize() {
     }
 }
 
-addEventListener('resize', resize)
-
-resize()
-
 function drawBlock(x, y, cellSize) {
     ctx.fillStyle = 'orange'
     ctx.fillRect(
@@ -166,120 +162,155 @@ class Wall {
     }
 }
 
-addEventListener('DOMContentLoaded', () => {
+let screenWidth = null
+let screenHeight = null
+let cellSize = null
+let gameBoardWidth = null
+let gameBoardHeight = null
+let score = null
+let gun = null
+let shots = []
+let wall = null
+let paused = false
+let gameOver = false
 
-    let screenWidth = canvas.width
-    let screenHeight = canvas.height
-    let cellSize = canvas.height / 20
-    let gameBoardWidth = 10
-    let gameBoardHeight = 20
-    let score = 0
-    let gun = new Gun(gameBoardHeight)
-    let shots = []
-    let wall = new Wall()
-    let paused = false
-    let gameOver = false
+function resizeGame() {
+    screenWidth = canvas.width
+    screenHeight = canvas.height
+    cellSize = canvas.height / 20
+}
 
-    function update() {
+function init() {
+    resizeGame()
+    gameBoardWidth = 10
+    gameBoardHeight = 20
+    score = 0
+    gun = new Gun(gameBoardHeight)
+    shots = []
+    wall = new Wall()
+    paused = false
+    gameOver = false
+}
 
-        if (gameOver || paused) return
+function update() {
 
-        shots.forEach((b, index) => {
-            if (b.pos.y < 0) shots.splice(index, 1)
+    if (gameOver || paused) return
+
+    shots.forEach((b, index) => {
+        if (b.pos.y == 0) {
+            wall.addBlock(b.pos.x, b.pos.y)
+            shots.splice(index, 1)
+        } else {
             b.update()
-            if (wall.checkCollision(b.pos.x, b.pos.y)) {
-                wall.addBlock(b.pos.x, b.pos.y)
-                shots.splice(index, 1)
+        }
+        if (wall.checkCollision(b.pos.x, b.pos.y)) {
+            wall.addBlock(b.pos.x, b.pos.y)
+            shots.splice(index, 1)
+        }
+    })
+
+    if (wall.checkFilledLines()) {
+        score += 1000
+        wall.removeFilledLines()
+    }
+
+    wall.update()
+
+    if (wall.isGameOver()) {
+        gameOver = true
+    }
+}
+
+function draw() {
+
+    ctx.fillStyle = '#00ff00'
+    ctx.fillRect(0, 0, cellSize * gameBoardWidth, cellSize * gameBoardHeight)
+    ctx.clearRect(1, 1, (cellSize * gameBoardWidth) - 2, (cellSize * gameBoardHeight) - 2)
+
+    gun.draw(cellSize)
+
+    wall.draw(cellSize)
+
+    shots.forEach(b => {
+        b.draw(cellSize)
+    })
+
+    ctx.clearRect(
+        gameBoardWidth * cellSize,
+        0,
+        screenWidth - (gameBoardWidth * cellSize),
+        screenHeight
+    )
+
+    ctx.font = `${cellSize}px Monospace`
+    ctx.fillStyle = 'green'
+    ctx.fillText(('000000' + score).slice(-6), screenWidth - (cellSize * 3.8), cellSize)
+    ctx.fillText('SCORE', screenWidth - (cellSize * 3.2), cellSize * 2)
+
+    if (paused) {
+        ctx.fillStyle = 'yellow'
+        ctx.fillText('PAUSE', screenWidth - (cellSize * 3.2), (gameBoardHeight - 4) * cellSize)
+    }
+
+    if (gameOver) {
+        ctx.fillStyle = 'red'
+        ctx.fillText('GAME', screenWidth - (cellSize * 3.2), (gameBoardHeight - 2) * cellSize)
+        ctx.fillText('OVER', screenWidth - (cellSize * 3.2), (gameBoardHeight - 1) * cellSize)
+    }
+}
+
+function move(x) {
+    if (gameOver || paused) return
+    if (x < 0 && gun.pos.x > 0) {
+        gun.pos.x += x
+    }
+    if (x > 0 && gun.pos.x < gameBoardWidth - 1) {
+        gun.pos.x += x
+    }
+}
+
+function shoot() {
+    if (gameOver || paused) return
+    shots.push(new Bullet(gun.pos.x, gun.pos.y - 1))
+}
+
+function handleKey(e) {
+    switch (e.code) {
+        case 'ArrowLeft':
+            move(-1)
+            break
+        case 'ArrowRight':
+            move(1)
+            break
+        case 'Space':
+            shoot()
+            break
+        case 'KeyP':
+            if (!gameOver) {
+                paused = !paused
             }
-        })
-
-        if (wall.checkFilledLines()) {
-            score += 1000
-            wall.removeFilledLines()
-        }
-
-        wall.update()
-
-        if (wall.isGameOver()) {
-            gameOver = true
-        }
+            break
+        case 'KeyR':
+            init()
+            break
     }
+}
 
-    function draw() {
-        ctx.clearRect(0, 0, screenWidth, screenHeight)
-        gun.draw(cellSize)
+addEventListener('keydown', handleKey)
 
-        wall.draw(cellSize)
+addEventListener('resize', () => {
+    resize()
+    resizeGame()
+})
 
-        shots.forEach(b => {
-            b.draw(cellSize)
-        })
+function run() {
+    update()
+    draw()
+    requestAnimationFrame(run)
+}
 
-        ctx.clearRect(
-            gameBoardWidth * cellSize,
-            0,
-            screenWidth - (gameBoardWidth * cellSize),
-            screenHeight
-        )
-
-        ctx.font = `${cellSize}px Monospace`
-        ctx.fillStyle = 'green'
-        ctx.fillText(('000000' + score).slice(-6), screenWidth - (cellSize * 3.8), cellSize)
-        ctx.fillText('SCORE', screenWidth - (cellSize * 3.2), cellSize * 2)
-
-        if (paused) {
-            ctx.fillStyle = 'yellow'
-            ctx.fillText('PAUSE', screenWidth - (cellSize * 3.2), (gameBoardHeight - 4) * cellSize)
-        }
-
-        if (gameOver) {
-            ctx.fillStyle = 'red'
-            ctx.fillText('GAME', screenWidth - (cellSize * 3.2), (gameBoardHeight - 2) * cellSize)
-            ctx.fillText('OVER', screenWidth - (cellSize * 3.2), (gameBoardHeight - 1) * cellSize)
-        }
-    }
-
-    function move(x) {
-        if (gameOver || paused) return
-        if (x < 0 && gun.pos.x > 0) {
-            gun.pos.x += x
-        }
-        if (x > 0 && gun.pos.x < gameBoardWidth - 1) {
-            gun.pos.x += x
-        }
-    }
-
-    function shoot() {
-        if (gameOver || paused) return
-        shots.push(new Bullet(gun.pos.x, gun.pos.y - 1))
-    }
-
-    function handleKey(e) {
-        switch (e.code) {
-            case 'ArrowLeft':
-                move(-1)
-                break
-            case 'ArrowRight':
-                move(1)
-                break
-            case 'Space':
-                shoot()
-                break
-            case 'KeyP':
-                if (!gameOver) {
-                    paused = !paused
-                }
-                break
-        }
-    }
-
-    addEventListener('keydown', handleKey)
-
-    function run() {
-        update()
-        draw()
-        requestAnimationFrame(run)
-    }
-
+addEventListener('DOMContentLoaded', () => {
+    resize()
+    init()
     run()
 })
