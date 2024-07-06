@@ -173,6 +173,7 @@ let shots = []
 let wall = null
 let paused = false
 let gameOver = false
+let lives = 4
 
 function resizeGame() {
     screenWidth = canvas.width
@@ -217,7 +218,12 @@ function update() {
     wall.update()
 
     if (wall.isGameOver()) {
-        gameOver = true
+        if (lives > 0) {
+            lives--
+            init()
+        } else {
+            gameOver = true
+        }
     }
 }
 
@@ -241,6 +247,12 @@ function draw() {
         screenWidth - (gameBoardWidth * cellSize),
         screenHeight
     )
+
+    for (let l = 0; l < lives; l++) {
+        let x = cellSize * (gameBoardWidth + (cellSize * 2))
+        console.log(cellSize)
+        drawBlock(gameBoardWidth + 2, 4 + l, cellSize)
+    }
 
     ctx.font = `${cellSize}px Monospace`
     ctx.fillStyle = 'green'
@@ -291,6 +303,7 @@ function handleKey(e) {
             }
             break
         case 'KeyR':
+            lives = 4
             init()
             break
     }
