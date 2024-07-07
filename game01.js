@@ -1,30 +1,46 @@
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
 
+const COLORS = {
+    body: 'rgb(14,21,17)',
+    screen: '#7e8f85',
+    on: '#000000',
+    off: 'rgba(0,0,0,.1)',
+    label: 'rgba(255,255,255,.7)'
+}
+
 function resize() {
     if (innerWidth > innerHeight) {
-        canvas.height = innerHeight * 0.97
-        canvas.width = ((innerHeight * 0.97) / 16) * 9
+        canvas.height = innerHeight
+        canvas.width = ((innerHeight) / 16) * 9
     }
     if (innerWidth < innerHeight) {
-        canvas.width = innerWidth * 0.97
-        canvas.height = ((innerWidth * 0.97) / 9) * 16
+        canvas.width = innerWidth
+        canvas.height = ((innerWidth) / 9) * 16
     }
 }
 
-function drawBlock(posX, posY, boardX, boardY, cellSize) {
-    ctx.fillStyle = 'orange'
+function drawBlock(posX, posY, boardX, boardY, cellSize, on = true) {
+    ctx.fillStyle = on ? COLORS.on : COLORS.off
     ctx.fillRect(
         posX + (cellSize * boardX) + (cellSize * 0.025),
         posY + (cellSize * boardY) + (cellSize * 0.025),
         cellSize * 0.95,
         cellSize * 0.95
     )
-    ctx.clearRect(
-        posX + (cellSize * boardX) + (cellSize * 0.2),
-        posY + (cellSize * boardY) + (cellSize * 0.2),
-        cellSize * 0.6,
-        cellSize * 0.6
+    ctx.fillStyle = COLORS.screen
+    ctx.fillRect(
+        posX + (cellSize * boardX) + (cellSize * 0.15),
+        posY + (cellSize * boardY) + (cellSize * 0.15),
+        cellSize * 0.7,
+        cellSize * 0.7
+    )
+    ctx.fillStyle = on ? COLORS.on : COLORS.off
+    ctx.fillRect(
+        posX + (cellSize * boardX) + (cellSize * 0.3),
+        posY + (cellSize * boardY) + (cellSize * 0.3),
+        cellSize * 0.4,
+        cellSize * 0.4
     )
 }
 
@@ -44,24 +60,31 @@ class Button {
     }
 
     inBounds(posX, posY) {
-        let x = this.x - this.radius / 2
-        let y = this.y - this.radius / 2
-        let w = this.radius * 2
-        let h = this.radius * 2
+        let r = this.radius * 1.5
+        let x = this.x - r / 2
+        let y = this.y - r / 2
+        let w = r * 2
+        let h = r * 2
         if (posX >= x && posX < x + w && posY >= y && posY < y + h) {
             return true
         }
         return false
     }
 
-    draw() {
-        ctx.strokeStyle = 'lightblue'
+    draw(cellSize) {
+        let grad = ctx.createRadialGradient(this.x, this.y, this.radius * .8, this.x, this.y, this.radius);
+        grad.addColorStop(0, "#ffee00");
+        grad.addColorStop(1, "orange");
+
+        ctx.fillStyle = grad
         ctx.beginPath()
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI)
-        ctx.stroke()
+        ctx.fill()
+
+        ctx.font = `bold ${cellSize}px monospace`
         ctx.textBaseline = 'middle'
         ctx.textAlign = 'center'
-        ctx.fillStyle = 'lightblue'
+        ctx.fillStyle = 'orange'
         ctx.fillText(this.text, this.x, this.y);
     }
 }
@@ -218,7 +241,19 @@ function resizeGame() {
     screenHeight = (screenWidth / 3) * 4
     screenPosX = (canvas.width - screenWidth) / 2
     screenPosY = (canvas.width - screenWidth) / 2
-    cellSize = screenHeight / 20
+    cellSize = (screenHeight - 6) / 20
+}
+
+function initButtons() {
+    buttons = [
+        new Button('SPACE', canvas.width * 0.85, (canvas.height / 16) * 13, cellSize * 2),
+        new Button('', canvas.width * .15, (canvas.height / 16) * 13, cellSize * 1.25),
+        new Button('', canvas.width * .40, (canvas.height / 16) * 13, cellSize * 1.25),
+        new Button('', canvas.width * .275, (canvas.height / 16) * 12, cellSize * 1.25),
+        new Button('', canvas.width * .275, (canvas.height / 16) * 14, cellSize * 1.25),
+        new Button('', (canvas.width / 10) * 5, (canvas.height / 16) * 10.5, cellSize * .75),
+        new Button('', (canvas.width / 10) * 7, (canvas.height / 16) * 10.5, cellSize * .75)
+    ]
 }
 
 function init() {
@@ -231,12 +266,7 @@ function init() {
     wall = new Wall()
     paused = false
     gameOver = false
-
-    buttons.push(new Button('SPACE', canvas.width * 0.85, (canvas.height / 16) * 13, 40))
-    buttons.push(new Button('<', canvas.width * .15, (canvas.height / 16) * 13, 20))
-    buttons.push(new Button('>', canvas.width * .35, (canvas.height / 16) * 13, 20))
-    buttons.push(new Button('^', canvas.width * .25, (canvas.height / 16) * 12, 20))
-    buttons.push(new Button('v', canvas.width * .25, (canvas.height / 16) * 14, 20))
+    initButtons()
 }
 
 function update() {
@@ -275,46 +305,61 @@ function update() {
 
 function draw() {
 
-    ctx.clearRect(0, 0, screenWidth, screenHeight)
+    ctx.fillStyle = COLORS.body
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    ctx.fillStyle = '#00ff00'
+    ctx.fillStyle = COLORS.screen
     ctx.fillRect(screenPosX, screenPosY, screenWidth, screenHeight)
-    ctx.fillStyle = '#000000'
-    ctx.fillRect(screenPosX + 1, screenPosY + 1, screenWidth - 2, screenHeight - 2)
-    ctx.fillStyle = '#00ff00'
-    ctx.fillRect(screenPosX, screenPosY, cellSize * gameBoardWidth, cellSize * gameBoardHeight)
-    ctx.fillStyle = '#000000'
-    ctx.fillRect(screenPosX + 1, screenPosY + 1, (cellSize * gameBoardWidth) - 2, (cellSize * gameBoardHeight) - 2)
 
-    gun.draw(screenPosX, screenPosY, cellSize)
+    ctx.strokeStyle = COLORS.on
+    ctx.strokeRect(screenPosX + 2, screenPosY + 2, (cellSize * gameBoardWidth) + 2, (cellSize * gameBoardHeight) + 2)
 
-    wall.draw(screenPosX, screenPosY, cellSize)
+    gun.draw(screenPosX + 3, screenPosY + 3, cellSize)
+
+    wall.draw(screenPosX + 3, screenPosY + 3, cellSize)
 
     shots.forEach(b => {
-        b.draw(screenPosX, screenPosY, cellSize)
+        b.draw(screenPosX + 3, screenPosY + 3, cellSize)
     })
 
     for (let l = 0; l < lives; l++) {
-        drawBlock(screenPosX, screenPosY, gameBoardWidth + 2, 4 + l, cellSize)
+        drawBlock(screenPosX + 3, screenPosY + 3, gameBoardWidth + 2, 4 + l, cellSize)
     }
 
-    ctx.font = `${cellSize}px Monospace`
-    ctx.fillStyle = 'green'
-    ctx.fillText(('000000' + score).slice(-6), (screenPosX + screenWidth) - (cellSize * 3.8), screenPosY + cellSize)
-    ctx.fillText('SCORE', (screenPosX + screenWidth) - (cellSize * 3.2), screenPosY + cellSize * 2)
+    ctx.textAlign = 'right'
+    ctx.font = `${(cellSize * 1.4)}px DS-Digital`
+    ctx.fillStyle = COLORS.on
+    ctx.fillText(('000000' + score).slice(-6), (screenPosX + screenWidth) - (cellSize * .4), screenPosY + cellSize)
+
+    ctx.font = `bold ${(cellSize)}px Arial`
+    ctx.fillText('SCORE', (screenPosX + screenWidth) - (cellSize * .4), screenPosY + cellSize * 2.1)
 
     if (paused) {
-        ctx.fillStyle = 'yellow'
-        ctx.fillText('PAUSE', (screenPosX + screenWidth) - (cellSize * 3.2), screenPosY + (gameBoardHeight - 4) * cellSize)
+        ctx.fillStyle = COLORS.on
+        ctx.fillText('PAUSE', (screenPosX + screenWidth) - cellSize, screenPosY + (gameBoardHeight - 4) * cellSize)
+    } else {
+        ctx.fillStyle = COLORS.off
+        ctx.fillText('PAUSE', (screenPosX + screenWidth) - cellSize, screenPosY + (gameBoardHeight - 4) * cellSize)
     }
 
+    ctx.font = `bold ${(cellSize * 1.4)}px monospace`
     if (gameOver) {
-        ctx.fillStyle = 'red'
-        ctx.fillText('GAME', (screenPosX + screenWidth) - (cellSize * 3.2), screenPosY + (gameBoardHeight - 2) * cellSize)
-        ctx.fillText('OVER', (screenPosX + screenWidth) - (cellSize * 3.2), screenPosY + (gameBoardHeight - 1) * cellSize)
+        ctx.fillStyle = COLORS.on
+        ctx.fillText('GAME', (screenPosX + screenWidth) - cellSize * .9, screenPosY + (gameBoardHeight - 2) * cellSize)
+        ctx.fillText('OVER', (screenPosX + screenWidth) - cellSize * .9, screenPosY + (gameBoardHeight - 1) * cellSize + 3)
+    } else {
+        ctx.fillStyle = COLORS.off
+        ctx.fillText('GAME', (screenPosX + screenWidth) - cellSize * .9, screenPosY + (gameBoardHeight - 2) * cellSize)
+        ctx.fillText('OVER', (screenPosX + screenWidth) - cellSize * .9, screenPosY + (gameBoardHeight - 1) * cellSize + 3)
     }
 
-    buttons.forEach(btn => btn.draw())
+    ctx.font = `bold ${(cellSize * .5)}px Arial`
+    ctx.textAlign = 'center'
+    ctx.fillStyle = COLORS.label
+    ctx.fillText('PAUSE', buttons[5].x, buttons[5].y + (buttons[5].radius * 1.75))
+    ctx.fillText('RESET', buttons[6].x, buttons[6].y + (buttons[6].radius * 1.75))
+
+    buttons.forEach(btn => btn.draw(cellSize))
 }
 
 function move(x) {
@@ -325,13 +370,13 @@ function move(x) {
     if (x > 0 && gun.pos.x < gameBoardWidth - 1) {
         gun.pos.x += x
     }
-    navigator.vibrate([200])
+    navigator.vibrate([50])
 }
 
 function shoot() {
     if (gameOver || paused) return
     shots.push(new Bullet(gun.pos.x, gun.pos.y - 1))
-    navigator.vibrate([200])
+    navigator.vibrate([50])
 }
 
 function handleKey(e) {
@@ -374,6 +419,15 @@ function handleTouch(e) {
                 case 2:
                     move(1)
                     break
+                case 5:
+                    if (!gameOver) {
+                        paused = !paused
+                    }
+                    break
+                case 6:
+                    lives = 4
+                    init()
+                    break
             }
         }
     })
@@ -384,6 +438,7 @@ addEventListener('touchstart', handleTouch)
 addEventListener('resize', () => {
     resize()
     resizeGame()
+    initButtons()
 })
 
 function run() {
