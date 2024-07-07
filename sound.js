@@ -1,5 +1,5 @@
 const music = new Audio()
-music.src = 'Tetris-99-Main-Theme.mp3'
+music.src = './Tetris-99-Main-Theme.mp3'
 
 music.loop = true
 music.volume = .8
