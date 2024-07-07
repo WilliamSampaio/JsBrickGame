@@ -5,6 +5,7 @@ music.loop = true
 music.volume = .8
 
 function play() {
+    music.autoplay = true
     music.play()
 }
 
