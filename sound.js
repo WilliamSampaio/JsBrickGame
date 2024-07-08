@@ -8,7 +8,7 @@ function play() {
     music.play()
 }
 
-addEventListener('load', play)
+// addEventListener('load', play)
 
 $("#muteAudioControl").attr('checked', music.muted)
 
@@ -26,3 +26,5 @@ $("#musicVolControl").val(music.volume * 100)
 $("#musicVolControl").on('change', () => {
     music.volume = $("#musicVolControl").val() * 0.01
 })
+
+music.play()
