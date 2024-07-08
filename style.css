@@ -19,7 +19,8 @@ canvas {
 .top-menu {
     position: absolute;
     width: 100%;
-    text-align: center;
+    display: flex;
+    justify-content: space-around;
     z-index: 999;
     opacity: .5;
 }
