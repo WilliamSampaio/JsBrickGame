@@ -1,5 +1,4 @@
-const music = new Audio()
-music.src = './Tetris-99-Main-Theme.mp3'
+const music = document.getElementById('music')
 
 music.loop = true
 music.volume = .8
