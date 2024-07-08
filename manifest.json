@@ -1,6 +1,8 @@
 {
     "short_name": "JsBrickGame",
     "name": "JsBrickGame",
+    "scope": "/JsBrickGame/",
+    "start_url": "/JsBrickGame/",
     "icons": [
         {
             "src": "icon-128.png",
