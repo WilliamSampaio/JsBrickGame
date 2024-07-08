@@ -1,6 +1,6 @@
 const music = document.createElement('audio')
 music.setAttribute('display', 'none')
-music.src = 'assets/sound/Tetris-99-Main-Theme.mp3'
+music.src = '/assets/sound/Tetris-99-Main-Theme.mp3'
 music.preload = 'auto'
 music.controls = false
 music.loop = true
