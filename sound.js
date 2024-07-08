@@ -25,6 +25,6 @@ $("#musicVolControl").on('change', () => {
     music.volume = $("#musicVolControl").val() * 0.01
 })
 
-addEventListener('DOMContentLoaded', () => {
+addEventListener('load', () => {
     music.play()
 })
