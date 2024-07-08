@@ -216,7 +216,11 @@ class Wall {
     draw(posX, posY, cellSize) {
         for (let y = 0; y < this.rows.length; y++) {
             for (let x = 0; x < this.rows[y].length; x++) {
-                if (this.rows[y][x] == 1) drawBlock(posX, posY, x, y, cellSize)
+                if (this.rows[y][x] == 1) {
+                    drawBlock(posX, posY, x, y, cellSize)
+                } else {
+                    drawBlock(posX, posY, x, y, cellSize, false)
+                }
             }
         }
     }
@@ -314,9 +318,9 @@ function draw() {
     ctx.strokeStyle = COLORS.on
     ctx.strokeRect(screenPosX + 2, screenPosY + 2, (cellSize * gameBoardWidth) + 2, (cellSize * gameBoardHeight) + 2)
 
-    gun.draw(screenPosX + 3, screenPosY + 3, cellSize)
-
     wall.draw(screenPosX + 3, screenPosY + 3, cellSize)
+
+    gun.draw(screenPosX + 3, screenPosY + 3, cellSize)
 
     shots.forEach(b => {
         b.draw(screenPosX + 3, screenPosY + 3, cellSize)
