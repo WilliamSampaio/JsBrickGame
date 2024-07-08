@@ -10,11 +10,11 @@ const COLORS = {
 }
 
 function resize() {
-    if (innerWidth > innerHeight) {
+    if ((innerWidth / innerHeight) > (9 / 16)) {
         canvas.height = innerHeight
         canvas.width = ((innerHeight) / 16) * 9
     }
-    if (innerWidth < innerHeight) {
+    if ((innerWidth / innerHeight) < (9 / 16)) {
         canvas.width = innerWidth
         canvas.height = ((innerWidth) / 9) * 16
     }
