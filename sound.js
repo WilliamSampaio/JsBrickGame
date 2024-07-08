@@ -25,4 +25,4 @@ $("#musicVolControl").on('change', () => {
     music.volume = $("#musicVolControl").val() * 0.01
 })
 
-music.play()
+music.autoplay = true
