@@ -1,14 +1,12 @@
-const music = document.getElementById('music')
-
+const music = document.createElement('audio')
+music.setAttribute('display', 'none')
+music.src = 'Tetris-99-Main-Theme.mp3'
+music.preload = 'auto'
+music.controls = false
 music.loop = true
 music.volume = .8
 
-function play() {
-    music.autoplay = true
-    music.play()
-}
-
-// addEventListener('load', play)
+document.body.appendChild(music)
 
 $("#muteAudioControl").attr('checked', music.muted)
 
@@ -27,4 +25,6 @@ $("#musicVolControl").on('change', () => {
     music.volume = $("#musicVolControl").val() * 0.01
 })
 
-if(music == true) music.play()
+addEventListener('DOMContentLoaded', () => {
+    music.play()
+})
