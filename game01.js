@@ -374,13 +374,11 @@ function move(x) {
     if (x > 0 && gun.pos.x < gameBoardWidth - 1) {
         gun.pos.x += x
     }
-    navigator.vibrate([50])
 }
 
 function shoot() {
     if (gameOver || paused) return
     shots.push(new Bullet(gun.pos.x, gun.pos.y - 1))
-    navigator.vibrate([50])
 }
 
 function handleKey(e) {
@@ -397,15 +395,14 @@ function handleKey(e) {
         case 'KeyP':
             if (!gameOver) {
                 paused = !paused
-                navigator.vibrate([50])
             }
             break
         case 'KeyR':
             lives = 4
             init()
-            navigator.vibrate([50])
             break
     }
+    navigator.vibrate([50])
 }
 
 addEventListener('keydown', handleKey)
