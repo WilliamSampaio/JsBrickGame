@@ -255,8 +255,8 @@ function initButtons() {
         new Button('', canvas.width * .40, (canvas.height / 16) * 13, cellSize * 1.25),
         new Button('', canvas.width * .275, (canvas.height / 16) * 12, cellSize * 1.25),
         new Button('', canvas.width * .275, (canvas.height / 16) * 14, cellSize * 1.25),
-        new Button('', (canvas.width / 10) * 5, (canvas.height / 16) * 10.5, cellSize * .75),
-        new Button('', (canvas.width / 10) * 7, (canvas.height / 16) * 10.5, cellSize * .75)
+        new Button('P', (canvas.width / 10) * 5, (canvas.height / 16) * 10.5, cellSize * .75),
+        new Button('R', (canvas.width / 10) * 7, (canvas.height / 16) * 10.5, cellSize * .75)
     ]
 }
 
