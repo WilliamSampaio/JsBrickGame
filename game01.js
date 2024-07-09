@@ -60,7 +60,7 @@ class Button {
     }
 
     inBounds(posX, posY) {
-        let r = this.radius * 1.5
+        let r = this.radius * 1.20
         let x = this.x - r / 2
         let y = this.y - r / 2
         let w = r * 2
@@ -251,10 +251,10 @@ function resizeGame() {
 function initButtons() {
     buttons = [
         new Button('SPACE', canvas.width * 0.85, (canvas.height / 16) * 13, cellSize * 2),
-        new Button('', canvas.width * .15, (canvas.height / 16) * 13, cellSize * 1.25),
-        new Button('', canvas.width * .40, (canvas.height / 16) * 13, cellSize * 1.25),
-        new Button('', canvas.width * .275, (canvas.height / 16) * 12, cellSize * 1.25),
-        new Button('', canvas.width * .275, (canvas.height / 16) * 14, cellSize * 1.25),
+        new Button('', canvas.width * .15, (canvas.height / 16) * 13, cellSize * 1.20),
+        new Button('', canvas.width * .40, (canvas.height / 16) * 13, cellSize * 1.20),
+        new Button('', canvas.width * .275, (canvas.height / 16) * 12, cellSize * 1.20),
+        new Button('', canvas.width * .275, (canvas.height / 16) * 14, cellSize * 1.20),
         new Button('P', (canvas.width / 10) * 5, (canvas.height / 16) * 10.5, cellSize * .75),
         new Button('R', (canvas.width / 10) * 7, (canvas.height / 16) * 10.5, cellSize * .75)
     ]
