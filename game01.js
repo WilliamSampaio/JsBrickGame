@@ -382,6 +382,7 @@ function shoot() {
 }
 
 function handleKey(e) {
+    navigator.vibrate([50])
     switch (e.code) {
         case 'ArrowLeft':
             move(-1)
@@ -402,7 +403,6 @@ function handleKey(e) {
             init()
             break
     }
-    navigator.vibrate([50])
 }
 
 addEventListener('keydown', handleKey)
