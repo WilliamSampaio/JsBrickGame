@@ -11,12 +11,12 @@ const COLORS = {
 
 function resize() {
     if ((innerWidth / innerHeight) > (9 / 16)) {
-        canvas.height = innerHeight
-        canvas.width = ((innerHeight) / 16) * 9
+        canvas.height = innerHeight * 0.97
+        canvas.width = ((innerHeight * 0.97) / 16) * 9
     }
     if ((innerWidth / innerHeight) < (9 / 16)) {
-        canvas.width = innerWidth
-        canvas.height = ((innerWidth) / 9) * 16
+        canvas.width = innerWidth * 0.97
+        canvas.height = ((innerWidth * 0.97) / 9) * 16
     }
 }
 
@@ -397,11 +397,13 @@ function handleKey(e) {
         case 'KeyP':
             if (!gameOver) {
                 paused = !paused
+                navigator.vibrate([50])
             }
             break
         case 'KeyR':
             lives = 4
             init()
+            navigator.vibrate([50])
             break
     }
 }
